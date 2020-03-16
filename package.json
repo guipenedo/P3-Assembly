@@ -2,10 +2,18 @@
     "name": "p3-assembly",
     "displayName": "P3 Assembly",
     "description": "VS Code language support for the P3 Assembly programming language, the language used in the fictitious processor P3, created at IST for educational purposes.",
-    "version": "0.0.1",
+    "version": "1.0.0",
+    "license": "mit",
     "engines": {
         "vscode": "^1.43.0"
     },
+    "keywords": ["p3", "assembly", "processor", "ist", "acomp"],
+    "icon": "logo.png",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/guipenedo/P3-Assembly.git"
+    },
+    "publisher": "guipenedo",
     "categories": [
         "Programming Languages"
     ],
