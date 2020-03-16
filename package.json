@@ -1,7 +1,7 @@
 {
     "name": "p3-assembly",
     "displayName": "P3 Assembly",
-    "description": "Language support for P3 Assembly programming language, the language used in the fictitious processor P3, created at IST for educational purposes.",
+    "description": "VS Code language support for the P3 Assembly programming language, the language used in the fictitious processor P3, created at IST for educational purposes.",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.43.0"
