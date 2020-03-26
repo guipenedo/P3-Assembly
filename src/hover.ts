@@ -26,11 +26,10 @@ export class P3HoverProvider implements vscode.HoverProvider {
             if (p3Line.instructionRange && p3Line.instructionRange.contains(position) && (p3Line.instruction.length > 0)) {
                 let op = p3Line.instruction;
                 //remove jump conditions, among others
-                if(op.indexOf(".") >= 0)
-                    op = op.substr(0, op.indexOf("."));
-                if (token.isCancellationRequested) {
+                if(op.indexOf('.') >= 0)
+                    op = op.substr(0, op.indexOf('.'));
+                if (token.isCancellationRequested) 
                     resolve();
-                }
                 //if this is indeed an instruction
                 let inst = this.documentationManager.instructions.get(op);
                 if(inst)
@@ -62,25 +61,25 @@ export class P3HoverProvider implements vscode.HoverProvider {
         if(!constant) resolve();
         let values = new Array<number>();
         //check binary
-        if(RegExp('[0-1]+b').test(constant)){
+        if(RegExp('[0-1]+b').test(constant))
             values.push(parseInt(constant, 2));
-        }
+        
         //check hex
-        else if(RegExp('[0-9A-F]{1,4}h').test(constant)){
+        else if(RegExp('[0-9A-F]{1,4}h').test(constant))
             values.push(parseInt(constant.substr(0, constant.length - 1), 16));
-        }
+        
         //check decimal
-        else if(RegExp('^[0-9]+').test(constant)){
+        else if(RegExp('^[0-9]+').test(constant))
             values.push(parseInt(constant));
-        }
+        
         //check string
-        else if(constant.length > 0 && constant[0] == '\'' && constant[constant.length - 1] == '\''){
+        else if(constant.length > 0 && constant[0] === '\'' && constant[constant.length - 1] === '\'')
             for(let c = 1; c < constant.length - 1; c++){
                 let code = constant.codePointAt(c);
                 if(code)
                     values.push(code);
             }
-        } else
+        else
             return resolve();
         resolve(new vscode.Hover(this.renderConstants(values)));
     }
@@ -88,7 +87,7 @@ export class P3HoverProvider implements vscode.HoverProvider {
     public renderConstants(values: Array<number>): Array<vscode.MarkdownString>{
         let rendered = new Array<vscode.MarkdownString>();
         for(let c of values){
-            let line = "**Dec**: " + c + " | **Hex**: " + c.toString(16).toUpperCase().padStart(4, '0') + "h" + (isNaN(c) ? "" : " | **Char**: " + String.fromCodePoint(c)) + " | **Bin**: " + c.toString(2) + "b";
+            let line = '**Dec**: ' + c + ' | **Hex**: ' + c.toString(16).toUpperCase().padStart(4, '0') + 'h' + (isNaN(c) ? '' : ' | **Char**: ' + String.fromCodePoint(c)) + ' | **Bin**: ' + c.toString(2) + 'b';
             rendered.push(new vscode.MarkdownString(line));
         }
         return rendered;
@@ -96,17 +95,17 @@ export class P3HoverProvider implements vscode.HoverProvider {
 
     public renderRegister(reg: P3DocumentationRegister): Array<vscode.MarkdownString>{
         let rendered = new Array<vscode.MarkdownString>();
-        rendered.push(new vscode.MarkdownString("Register **" + reg.name + "** " + (reg.alias.length ? "(" + reg.alias.join(", ") + ")" : "")));
+        rendered.push(new vscode.MarkdownString('Register **' + reg.name + '** ' + (reg.alias.length ? '(' + reg.alias.join(', ') + ')' : '')));
         rendered.push(new vscode.MarkdownString(reg.description));
         return rendered;
     }
 
     public renderInstruction(inst: P3DocumentationInstruction): Array<vscode.MarkdownString>{
         let rendered = new Array<vscode.MarkdownString>();
-        let top = "**" + inst.name + "**" + (inst.pseudo ? " (Pseudo-instrução)" : "") + ": *" + inst.format + "*";
+        let top = '**' + inst.name + '**' + (inst.pseudo ? ' (Pseudo-instrução)' : '') + ': *' + inst.format + '*';
         rendered.push(new vscode.MarkdownString(top));
         if(inst.flags){
-            let flags = "**Flags**: " + inst.flags;
+            let flags = '**Flags**: ' + inst.flags;
             rendered.push(new vscode.MarkdownString(flags));
         }
         rendered.push(new vscode.MarkdownString(inst.description));

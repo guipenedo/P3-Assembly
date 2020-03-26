@@ -12,16 +12,16 @@ export const operators = ['ORIG', 'ADD', 'ADDC', 'AND', 'BR', 'CALL', 'CLC', 'CM
 
 export class P3Line {
     static keywordsRegExps?: Array<RegExp>;
-    label: string = "";
-    instruction: string = "";
-    data: string = "";
-    comment: string = "";
-    raw: string = "";
+    label: string = '';
+    instruction: string = '';
+    data: string = '';
+    comment: string = '';
+    raw: string = '';
     start: Position;
     end: Position;
-    variable: string = "";
-    operator: string = "";
-    value: string = "";
+    variable: string = '';
+    operator: string = '';
+    value: string = '';
     spacesBeforeLabelRange: Range;
     labelRange: Range;
     spacesLabelToInstructionRange: Range;
@@ -48,9 +48,8 @@ export class P3Line {
         this.raw = line;
         this.vscodeTextLine = vscodeTextLine;
         let lineNumber = 0;
-        if (vscodeTextLine) {
+        if (vscodeTextLine) 
             lineNumber = vscodeTextLine.lineNumber;
-        }
         this.start = new Position(lineNumber, 0);
         this.end = new Position(lineNumber, line.length);
         this.spacesBeforeLabelRange = new Range(new Position(lineNumber, 0), new Position(lineNumber, 0));
@@ -82,9 +81,9 @@ export class P3Line {
         let leadingSpacesCount = line.search(/\S/);
         let current = new Position(lineNumber, 0);
         let next: Position;
-        if (leadingSpacesCount < 0) {
+        if (leadingSpacesCount < 0) 
             leadingSpacesCount = 0;
-        } else {
+        else {
             next = new Position(lineNumber, leadingSpacesCount);
             this.spacesBeforeLabelRange = new Range(current, next);
             current = next;
@@ -101,9 +100,9 @@ export class P3Line {
             let commentPosInInputLine = -1;
             for (let i = 0; i < line.length; i++) {
                 let c = line.charAt(i);
-                if (c === "\'") {
+                if (c === '\'') 
                     inQuotes = !inQuotes;
-                } else if (!inQuotes && (c === ";")) {
+                else if (!inQuotes && (c === ';')) {
                     commentPosInInputLine = i;
                     break;
                 }
@@ -131,26 +130,26 @@ export class P3Line {
                     keywordIndex = sPos;
                 }
             }
-            let qPos = searchInstructionString.indexOf("\"");
-            if (qPos > 0) {
+            let qPos = searchInstructionString.indexOf('"');
+            if (qPos > 0) 
                 searchInstructionString = searchInstructionString.substring(0, qPos);
-            }
-            qPos = searchInstructionString.indexOf("'");
-            if (qPos > 0) {
+            
+            qPos = searchInstructionString.indexOf('\'');
+            if (qPos > 0) 
                 searchInstructionString = searchInstructionString.substring(0, qPos);
-            }
+            
             let keyword: RegExpExecArray | null = null;
-            if (P3Line.keywordsRegExps) {
+            if (P3Line.keywordsRegExps) 
                 keyword = this.search(P3Line.keywordsRegExps, searchInstructionString);
-            }
+            
             if (keyword) {
                 // A keyword has been found
                 // set the keyword
                 this.lineType = P3LineType.INSTRUCTION;
                 this.instruction = keyword[0];
-                if(['CALL', 'JMP', 'BR'].includes(this.instruction)){
+                if(['CALL', 'JMP', 'BR'].includes(this.instruction))
                     this.jumpInstruction = true;
-                }
+                
                 keywordIndex += keyword.index;
                 let startInInputLine = leadingSpacesCount + keywordIndex;
                 let endInInputLine = startInInputLine + this.instruction.length;
@@ -176,18 +175,18 @@ export class P3Line {
                     this.dataRange = new Range(current, next);
                     current = next;
                 }
-                if (this.comment.length > 0) {
+                if (this.comment.length > 0) 
                     this.spacesDataToCommentRange = new Range(current, this.commentRange.start);
-				}
+                
 				
-				//label check (contains : in > 0 position and is not a comment)
-				let labelEnd = line.indexOf(":");
-				if (labelEnd > leadingSpacesCount && (labelEnd < commentPosInInputLine || commentPosInInputLine < 0)){
-					this.lineType = P3LineType.LABEL;
-					this.label = l.substr(0, l.indexOf(":"));
-					this.labelRange = new Range(new Position(lineNumber, leadingSpacesCount), new Position(lineNumber, leadingSpacesCount + this.label.length));
-				}
-			}
+                //label check (contains : in > 0 position and is not a comment)
+                let labelEnd = line.indexOf(':');
+                if (labelEnd > leadingSpacesCount && (labelEnd < commentPosInInputLine || commentPosInInputLine < 0)){
+                    this.lineType = P3LineType.LABEL;
+                    this.label = l.substr(0, l.indexOf(':'));
+                    this.labelRange = new Range(new Position(lineNumber, leadingSpacesCount), new Position(lineNumber, leadingSpacesCount + this.label.length));
+                }
+            }
         }
     }
 
@@ -198,11 +197,9 @@ export class P3Line {
      * @return True if it as been found
      */
     test(regexps: Array<RegExp>, value: string): boolean {
-        for (let regexp of regexps) {
-            if (regexp.test(value)) {
+        for (let regexp of regexps) 
+            if (regexp.test(value)) 
                 return true;
-            }
-        }
         return false;
     }
 
@@ -216,16 +213,15 @@ export class P3Line {
         let firstMatch: any | null = null;
         for (let regexp of regexps) {
             let r = regexp.exec(value);
-            if (r) {
+            if (r) 
                 if (firstMatch !== null) {
                     // Which one is the first in the line
-                    if (r.index < firstMatch.index) {
+                    if (r.index < firstMatch.index) 
                         firstMatch = r;
-                    }
+                    
                 } else {
                     firstMatch = r;
                 }
-            }
         }
         return firstMatch;
     }
@@ -259,9 +255,8 @@ export class P3Line {
      * @return the symbol string and the range, otherwise undefined
      */
     public getSymbolFromVariable(): [string | undefined, Range | undefined] {
-        if (this.variable.length > 0) {
+        if (this.variable.length > 0) 
             return [this.variable, this.variableRange];
-        }
         return [undefined, undefined];
     }
 
@@ -319,23 +314,23 @@ export class P3Document {
     }
 
     public parse() {
-        if (this.document.lineCount <= 0) {
+        if (this.document.lineCount <= 0) 
             return;
-        }
-        if (!this.range) {
+        
+        if (!this.range) 
             this.range = new Range(new Position(0, 0), new Position(this.document.lineCount - 1, 0));
-        }
+        
         // Parse all the lines
         for (let i = this.range.start.line; i <= this.range.end.line; i++) {
-            if (this.token && this.token.isCancellationRequested) {
+            if (this.token && this.token.isCancellationRequested) 
                 return;
-            }
+            
             const line = this.document.lineAt(i);
             let p3Line = new P3Line(line.text, line);
             this.p3LinesArray.push(p3Line);
-            if(p3Line.lineType == P3LineType.LABEL)
+            if(p3Line.lineType === P3LineType.LABEL)
                 this.p3Labels.set(p3Line.label, p3Line);
-            else if(p3Line.lineType == P3LineType.ASSIGNMENT)
+            else if(p3Line.lineType === P3LineType.ASSIGNMENT)
                 this.p3Assignments.set(p3Line.variable, p3Line);
         }
     }
