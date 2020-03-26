@@ -86,11 +86,13 @@
             "editor/context": [
                 {
                     "command": "extension.runAssembler",
-                    "group": "P3@1"
+                    "group": "P3@1",
+                    "when": "editorTextFocus && editorLangId == p3"
                 },
                 {
                     "command": "extension.runAssembler&Simulator",
-                    "group": "P3@2"
+                    "group": "P3@2",
+                    "when": "editorTextFocus && editorLangId == p3"
                 }
             ]
         },
@@ -99,7 +101,7 @@
                 "command": "extension.runAssembler&Simulator",
                 "key": "ctrl+shift+R",
                 "mac": "cmd+shift+R",
-                "when": "editorTextFocus"
+                "when": "editorTextFocus && editorLangId == p3"
             }
         ]
     },
