@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.0
+- Added assembler and simulator selection
+- Added in-editor assembly and simulation with keybindings and options in the context menu
+
 ## 1.1.0
 
 - Added hover instruction documentation
