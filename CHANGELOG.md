@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.2.1
+- Fixed not showing docs for some pseudo instructions
+- Fixed not finding some labels and variables
+- Fixed reading binary (xxxxxb) numbers
+- Now correctly handles strings ('xxxxx') - will not look for labels or variables inside, but will display ascii codes
+
 ## 1.2.0
 - Added assembler and simulator selection
 - Added in-editor assembly and simulation with keybindings and options in the context menu
