@@ -10,7 +10,7 @@ VS Code addon providing language support for the P3 Assembly programming languag
 
 <img src="https://raw.githubusercontent.com/guipenedo/P3-Assembly/master/media/docs%26constants.gif" width="800">
 
-+ In editor assemble and run: assemble your code with a click or mouse shortcut and launch the simulator. We will remember your assembler and simulator selections
++ In editor assemble and run: assemble your code with a click or mouse shortcut and launch the simulator. The extension saves your assembler and simulator selections
 
 <img src="https://raw.githubusercontent.com/guipenedo/P3-Assembly/master/media/assembler%26simulator.gif" width="800">
 
