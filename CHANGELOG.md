@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.2
+- Fixed not interpreting numbers inside strings as ascii characters
+
 ## 1.2.1
 - Fixed not showing docs for some pseudo instructions
 - Fixed not finding some labels and variables

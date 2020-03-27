@@ -2,7 +2,7 @@
     "name": "p3-assembly",
     "displayName": "P3 Assembly",
     "description": "VS Code language support for the P3 Assembly programming language, the language used in the fictitious processor P3, created at IST for educational purposes.",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "license": "MIT",
     "engines": {
         "vscode": "^1.43.0"
