@@ -49,7 +49,6 @@ export class P3HoverProvider implements vscode.HoverProvider {
                         if(reg[1] && reg[1].contains(position) && register)
                             resolve(new vscode.Hover(this.renderRegister(register)));
                     }
-                    console.log('HERE YA GO M8');
                     this.parseConstant(document, position, resolve);
                 } else if (p3Line.valueRange && p3Line.valueRange.contains(position)) 
                     this.parseConstant(document, position, resolve);
@@ -61,7 +60,6 @@ export class P3HoverProvider implements vscode.HoverProvider {
     public async parseConstant(document: vscode.TextDocument, position: vscode.Position, resolve: (hover?: vscode.Hover) => any){
         let constant = document.getText(document.getWordRangeAtPosition(position));
         if(!constant) resolve();
-        console.log('constant:' + constant);
         let values = new Array<number>();
         let number;
 
