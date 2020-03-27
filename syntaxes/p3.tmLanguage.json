@@ -32,68 +32,20 @@
     "constants": {
       "patterns": [
         {
-          "name": "constant.numeric.binary.floating-point.p3",
-          "match": "(?i)\\b0[by](?:[01][01_]*)\\.(?:(?:[01][01_]*)?(?:p[+-]?(?:[0-9][0-9_]*))?\\b)?"
-        },
-        {
-          "name": "constant.numeric.binary.floating-point.p3",
-          "match": "(?i)\\b0[by](?:[01][01_]*)(?:p[+-]?(?:[0-9][0-9_]*))\\b"
-        },
-        {
-          "name": "constant.numeric.octal.floating-point.p3",
-          "match": "(?i)\\b0[oq](?:[0-7][0-7_]*)\\.(?:(?:[0-7][0-7_]*)?(?:p[+-]?(?:[0-9][0-9_]*))?\\b)?"
-        },
-        {
-          "name": "constant.numeric.octal.floating-point.p3",
-          "match": "(?i)\\b0[oq](?:[0-7][0-7_]*)(?:p[+-]?(?:[0-9][0-9_]*))\\b"
-        },
-        {
-          "name": "constant.numeric.decimal.floating-point.p3",
-          "match": "(?i)\\b(?:0[dt])?(?:[0-9][0-9_]*)\\.(?:(?:[0-9][0-9_]*)?(?:e[+-]?(?:[0-9][0-9_]*))?\\b)?"
-        },
-        {
-          "name": "constant.numeric.decimal.floating-point.p3",
-          "match": "(?i)\\b(?:[0-9][0-9_]*)(?:e[+-]?(?:[0-9][0-9_]*))\\b"
-        },
-        {
-          "name": "constant.numeric.decimal.packed-bcd.p3",
-          "match": "(?i)\\b(?:[0-9][0-9_]*)p(?:[0-9][0-9_]*)?\\b"
-        },
-        {
-          "name": "constant.numeric.hex.floating-point.p3",
-          "match": "(?i)\\b0[xh](?:[[:xdigit:]][[:xdigit:]_]*)\\.(?:(?:[[:xdigit:]][[:xdigit:]_]*)?(?:p[+-]?(?:[0-9][0-9_]*))?\\b)?"
-        },
-        {
-          "name": "constant.numeric.hex.floating-point.p3",
-          "match": "(?i)\\b0[xh](?:[[:xdigit:]][[:xdigit:]_]*)(?:p[+-]?(?:[0-9][0-9_]*))\\b"
-        },
-        {
-          "name": "constant.numeric.hex.floating-point.p3",
-          "match": "(?i)\\$[0-9]\\_?(?:[[:xdigit:]][[:xdigit:]_]*)?\\.(?:(?:[[:xdigit:]][[:xdigit:]_]*)?(?:p[+-]?(?:[0-9][0-9_]*))?\\b)?"
-        },
-        {
-          "name": "constant.numeric.hex.floating-point.p3",
-          "match": "(?i)\\$[0-9]\\_?(?:[[:xdigit:]][[:xdigit:]_]*)(?:p[+-]?(?:[0-9][0-9_]*))\\b"
-        },
-        {
           "name": "constant.numeric.binary.p3",
-          "match": "(?i)\\b(?:(?:0[by](?:[01][01_]*))|(?:(?:[01][01_]*)[by]))\\b"
+          "match": "(\\b|-)[01]+b\\b"
         },
         {
           "name": "constant.numeric.octal.p3",
-          "match": "(?i)\\b(?:(?:0[oq](?:[0-7][0-7_]*))|(?:(?:[0-7][0-7_]*)[oq]))\\b"
+          "match": "(\\b|-)[0-7]+o\\b"
         },
         {
           "name": "constant.numeric.decimal.p3",
-          "match": "(?i)\\b(?:(?:0[dt](?:[0-9][0-9_]*))|(?:(?:[0-9][0-9_]*)[dt]?))\\b"
+          "match": "(\\b|-)[0-9]+\\b"
         },
         {
           "name": "constant.numeric.hex.p3",
-          "match": "(?i)(?:\\$[0-9]\\_?(?:[[:xdigit:]][[:xdigit:]_]*)?)\\b"
-        },
-        {
-          "name": "constant.numeric.hex.p3",
-          "match": "(?i)\\b(?:(?:0[xh](?:[[:xdigit:]][[:xdigit:]_]*))|(?:(?:[[:xdigit:]][[:xdigit:]_]*)[hxHX]))\\b"
+          "match": "(\\b|-)[0-9A-Fa-f]{1,4}h\\b"
         }
       ]
     },
@@ -199,7 +151,7 @@
       "patterns": [
         {
           "name": "comment.line",
-          "match": "(;|(^|\\s)#\\s).*$"
+          "match": ";.*$"
         }
       ]
     },
@@ -250,11 +202,11 @@
       "patterns": [
         {
           "name": "keyword.operator.word.mnemonic.general-purpose.data-transfer",
-          "match": "(?i)\\b(mov|mvbh|mvbl|xch|push|pop)\\b"
+          "match": "(?i)\\b(mov|mvb(h|l)|xch|push|pop)\\b"
         },
         {
           "name": "keyword.operator.word.mnemonic.general-purpose.binary-arithmetic",
-          "match": "(?i)\\b(add|addc|sub|subb|mul|div|inc|dec|neg|cmp)\\b"
+          "match": "(?i)\\b(addc?|subb?|mul|div|inc|dec|neg|cmp)\\b"
         },
         {
           "name": "keyword.operator.word.mnemonic.general-purpose.logical",
@@ -262,14 +214,14 @@
         },
         {
           "name": "keyword.operator.word.mnemonic.general-purpose.rotate",
-          "match": "(?i)\\b(sh[rl](a?)|ro[rl](c?))\\b"
+          "match": "(?i)\\b(sh[rl]a?|ro[rl]c?)\\b"
         },
         {
           "name": "keyword.operator.word.mnemonic.general-purpose.other",
           "match": "(?i)\\b(nop|eni|dsi|stc|clc|cmc)\\b"
         },
         {
-          "match": "(?i)\\b((br|jmp)(\\.N?[zcnopi])?)(\\s+)(\\w+)\\b",
+          "match": "(?i)\\b((br|jmp)(\\.n?[zcnopi])?)(\\s+)(\\w+)\\b",
           "captures": {
             "1": {
               "name": "keyword.control.mnemonic.jmp"
@@ -280,7 +232,7 @@
           }
         },
         {
-          "match": "(?i)\\b((call)(\\.N?[zcnopi])?)(\\s+)(\\w+)\\b",
+          "match": "(?i)\\b((call)(\\.n?[zcnopi])?)(\\s+)(\\w+)\\b",
           "captures": {
             "1": {
               "name": "keyword.control.mnemonic.call"
@@ -292,7 +244,7 @@
         },
         {
           "name": "keyword.control.mnemonic.other",
-          "match": "(?i)\\b(ret|retn|rti|int)\\b"
+          "match": "(?i)\\b(retn?|rti|int)\\b"
         }
       ]
     }

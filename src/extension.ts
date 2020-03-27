@@ -10,7 +10,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     await state.getDocumentationManager().then((docManager) => {
         context.subscriptions.push(vscode.languages.registerHoverProvider('p3', new P3HoverProvider(docManager)));
-        context.subscriptions.push(vscode.languages.registerDefinitionProvider('p3', new P3DefinitionProvider()));
+        context.subscriptions.push(vscode.languages.registerDefinitionProvider('p3', new P3DefinitionProvider(docManager)));
     });
 
     //assemble and simulate commands

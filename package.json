@@ -14,7 +14,7 @@
         "ist",
         "acomp"
     ],
-    "icon": "logo.png",
+    "icon": "media/logo.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/guipenedo/P3-Assembly.git"
@@ -110,7 +110,8 @@
         "compile": "tsc -p ./",
         "lint": "eslint src --ext ts",
         "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile && npm run lint"
+        "pretest": "npm run compile && npm run lint",
+        "syntax": "npx js-yaml syntaxes/p3.tmLanguage.yaml > syntaxes/p3.tmLanguage.json"
     },
     "devDependencies": {
         "js-yaml": "^3.13.1",

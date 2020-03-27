@@ -21,57 +21,73 @@ export class P3HoverProvider implements vscode.HoverProvider {
      */
     public async provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Hover> {
         return new Promise(resolve => {
-            let line = document.lineAt(position.line);
-            let p3Line = new P3Line(line.text, line);
-            if (p3Line.instructionRange && p3Line.instructionRange.contains(position) && (p3Line.instruction.length > 0)) {
-                let op = p3Line.instruction;
-                //remove jump conditions, among others
-                if(op.indexOf('.') >= 0)
-                    op = op.substr(0, op.indexOf('.'));
-                if (token.isCancellationRequested) 
-                    resolve();
-                //if this is indeed an instruction
-                let inst = this.documentationManager.instructions.get(op);
-                if(inst)
-                    resolve(new vscode.Hover(this.renderInstruction(inst)));
-            } else if (p3Line.dataRange && p3Line.dataRange.contains(position)) {
-                let registers = p3Line.getRegistersFromData();
-                for(var reg of registers){
-                    let register = this.documentationManager.registers.get(reg[0]);
-                    if(reg[1] && reg[1].contains(position) && register)
-                        resolve(new vscode.Hover(this.renderRegister(register)));
+            this.documentationManager.findDefinition(document, position, token).then(defPosition => {
+                // start by looking for an actual definition (variable/label)
+                if(defPosition){
+                    let msg = new vscode.MarkdownString();
+                    msg.appendCodeblock(document.lineAt(defPosition.line).text);
+                    msg.appendMarkdown('**ctrl+click** para *saltar* (**cmd+click** no macOS)');
+                    resolve(new vscode.Hover(msg));
                 }
-                let symbols = p3Line.getSymbolFromData();
-                if(symbols[0] && symbols[1]?.contains(position))
-                    this.parseConstant(this.extractConstant(document, symbols[1], position), resolve);
-            } else if (p3Line.valueRange && p3Line.valueRange.contains(position)) 
-                this.parseConstant(this.extractConstant(document, p3Line.valueRange, position), resolve);
-            resolve();
+                let line = document.lineAt(position.line);
+                let p3Line = new P3Line(line.text, line);
+                if (p3Line.instructionRange && p3Line.instructionRange.contains(position) && (p3Line.instruction.length > 0)) {
+                    let op = p3Line.instruction;
+                    //remove jump conditions, among others
+                    if(op.indexOf('.') >= 0)
+                        op = op.substr(0, op.indexOf('.'));
+                    if (token.isCancellationRequested) 
+                        resolve();
+                    //if this is indeed an instruction
+                    let inst = this.documentationManager.instructions.get(op);
+                    if(inst)
+                        resolve(new vscode.Hover(this.renderInstruction(inst)));
+                } else if (p3Line.dataRange && p3Line.dataRange.contains(position)) {
+                    let registers = p3Line.getRegistersFromData();
+                    for(var reg of registers){
+                        let register = this.documentationManager.registers.get(reg[0]);
+                        if(reg[1] && reg[1].contains(position) && register)
+                            resolve(new vscode.Hover(this.renderRegister(register)));
+                    }
+                    console.log('HERE YA GO M8');
+                    this.parseConstant(document, position, resolve);
+                } else if (p3Line.valueRange && p3Line.valueRange.contains(position)) 
+                    this.parseConstant(document, position, resolve);
+                resolve();
+            });
         });
     }
 
-    public extractConstant(document: vscode.TextDocument, range: vscode.Range, position: vscode.Position): string {
-        let constant = document.getText(range);
-        if(constant.length >= 3 && constant.indexOf('\'') >= 0)
-            return constant;
-        return document.getText(document.getWordRangeAtPosition(position));
-    }
-
-    public async parseConstant(constant: string, resolve: (hover?: vscode.Hover) => any){
+    public async parseConstant(document: vscode.TextDocument, position: vscode.Position, resolve: (hover?: vscode.Hover) => any){
+        let constant = document.getText(document.getWordRangeAtPosition(position));
         if(!constant) resolve();
+        console.log('constant:' + constant);
         let values = new Array<number>();
+        let number;
+
         //check binary
-        if(RegExp('[0-1]+b').test(constant))
-            values.push(parseInt(constant, 2));
+        if(RegExp('[01]+b').test(constant))
+            number = parseInt(constant, 2);
         
+        //check octal
+        if(RegExp('[0-7]+o').test(constant))
+            number = parseInt(constant, 8);
+
         //check hex
-        else if(RegExp('[0-9A-F]{1,4}h').test(constant))
-            values.push(parseInt(constant.substr(0, constant.length - 1), 16));
+        else if(RegExp('[0-9A-Fa-f]{1,4}h').test(constant))
+            number = parseInt(constant.substr(0, constant.length - 1), 16);
         
         //check decimal
-        else if(RegExp('^[0-9]+').test(constant))
-            values.push(parseInt(constant));
+        else if(RegExp('^-?[0-9]+').test(constant))
+            number = parseInt(constant);
         
+        if(number !== undefined){
+            if(number >= 0 && number & 0x8000)
+                // isto é um numero negativo pa, toca a converter
+                number -= 65536;
+            values.push(number);
+        }
+
         //check string
         else if(constant.length > 0 && constant[0] === '\'' && constant[constant.length - 1] === '\'')
             for(let c = 1; c < constant.length - 1; c++){
@@ -87,7 +103,8 @@ export class P3HoverProvider implements vscode.HoverProvider {
     public renderConstants(values: Array<number>): Array<vscode.MarkdownString>{
         let rendered = new Array<vscode.MarkdownString>();
         for(let c of values){
-            let line = '**Dec**: ' + c + ' | **Hex**: ' + c.toString(16).toUpperCase().padStart(4, '0') + 'h' + (isNaN(c) ? '' : ' | **Char**: ' + String.fromCodePoint(c)) + ' | **Bin**: ' + c.toString(2) + 'b';
+            let complement = c < 0 ? c + 65536 : c;
+            let line = '**Dec**: ' + c + ' | **Hex**: ' + complement.toString(16).toUpperCase().padStart(4, '0') + 'h' + (isNaN(c) || c < 0 || c >= 0x10FFFF ? '' : ' | **Char**: ' + String.fromCodePoint(c)) + ' | **Bin**: ' + complement.toString(2) + 'b';
             rendered.push(new vscode.MarkdownString(line));
         }
         return rendered;

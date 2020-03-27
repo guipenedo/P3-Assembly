@@ -261,21 +261,6 @@ export class P3Line {
     }
 
     /**
-     * Returns the symbol retrieved from a data.
-     * 
-     * @return the symbol string and the range, otherwise undefined
-     */
-    public getSymbolFromData(): [string | undefined, Range | undefined] {
-        if (this.data.length > 0 && this.data.indexOf(',') >= 0 && this.data.indexOf(',') + 1 < this.data.length) {
-            let symbol = this.data.substr(this.data.indexOf(',') + 1).trim();
-            let startPos = this.dataRange.start.character + this.data.indexOf(symbol, this.data.indexOf(','));
-            let range = new Range(new Position(this.dataRange.start.line, startPos), new Position(this.dataRange.end.line, startPos + symbol.length));
-            return [symbol, range];
-        }
-        return [undefined, undefined];
-    }
-
-    /**
      * Returns the registers retrieved from a data.
      * 
      * @param registersRange range of registers: format R0-R7, SP, PC, RE, R11-R15
