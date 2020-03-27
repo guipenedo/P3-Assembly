@@ -70,44 +70,17 @@ export class P3HoverProvider implements vscode.HoverProvider {
     }
 
     public async parseConstant(document: vscode.TextDocument, position: vscode.Position, resolve: (hover?: vscode.Hover) => any){
-        let constant = document.getText(document.getWordRangeAtPosition(position));
-        if(!constant) resolve();
         let values = new Array<number>();
-        let numValue;
 
-        //check binary
-        if(RegExp('[0-1]+b').test(constant))
-            numValue = parseInt(constant, 2);
+        let line = document.lineAt(position.line);
+        let p3Line = new P3Line(line.text, line);
         
-        //check octal
-        else if(RegExp('[0-7]+o').test(constant))
-            numValue = parseInt(constant, 8);
-
-        //check hex
-        else if(RegExp('[0-9A-Fa-f]{1,4}h').test(constant))
-            numValue = parseInt(constant.substr(0, constant.length - 1), 16);
+        let openQuote = p3Line.findOpeningQuote(position);
         
-        //check decimal
-        else if(RegExp('^-?[0-9]+').test(constant))
-            numValue = parseInt(constant);
-        
-        if(numValue !== undefined && !isNaN(numValue)){
-            if(numValue >= 0 && numValue & 0x8000)
-                // isto é um numero negativo pa, toca a converter
-                numValue -= 65536;
-            values.push(numValue);
-        }
-
-        //check string
-        else {
-            let line = document.lineAt(position.line);
-            let p3Line = new P3Line(line.text, line);
-            
-            let openQuote = p3Line.findOpeningQuote(position);
-            
-            if(openQuote < 0) resolve();
+        //if in quotes
+        if(openQuote >= 0){
             if(line.text.indexOf('\'', openQuote + 1) >= 0){
-                constant = line.text.substring(openQuote + 1, line.text.indexOf('\'', openQuote + 1));
+                let constant = line.text.substring(openQuote + 1, line.text.indexOf('\'', openQuote + 1));
                 for(let c = 0; c < constant.length; c++){
                     let code = constant.codePointAt(c);
                     if(code)
@@ -115,6 +88,36 @@ export class P3HoverProvider implements vscode.HoverProvider {
                 }
             }
         }
+        //otherwise look for numbers
+        else {
+            let constant = document.getText(document.getWordRangeAtPosition(position));
+            if(!constant) resolve();
+            let numValue;
+
+            //check binary
+            if(RegExp('[0-1]+b').test(constant))
+                numValue = parseInt(constant, 2);
+        
+            //check octal
+            else if(RegExp('[0-7]+o').test(constant))
+                numValue = parseInt(constant, 8);
+
+            //check hex
+            else if(RegExp('[0-9A-Fa-f]{1,4}h').test(constant))
+                numValue = parseInt(constant.substr(0, constant.length - 1), 16);
+        
+            //check decimal
+            else if(RegExp('^-?[0-9]+').test(constant))
+                numValue = parseInt(constant);
+        
+            if(numValue !== undefined && !isNaN(numValue)){
+                if(numValue >= 0 && numValue & 0x8000)
+                // isto é um numero negativo pa, toca a converter
+                    numValue -= 65536;
+                values.push(numValue);
+            }
+        }
+
         if(values.length)
             resolve(new vscode.Hover(this.renderConstants(values)));
         resolve();
