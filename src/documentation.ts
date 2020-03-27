@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import {P3Line, P3Document} from './parser';
+import {P3Line, P3Document, P3LineType} from './parser';
 
 export class P3DocumentationManager {
     instructions = new Map<string, P3DocumentationInstruction>();
@@ -58,15 +58,17 @@ export class P3DocumentationManager {
             let line = document.lineAt(position.line);
             let p3Line = new P3Line(line.text, line);
             let word = document.getText(document.getWordRangeAtPosition(position)).trim();
-            //if this is a CALL, JMP, or BR, check if the label is defined and fetch its position
-            if(p3Line.jumpInstruction && p3Line.dataRange && p3Line.dataRange.contains(position)){
+            //if this is inside quotes, we have to ignore it
+            if(p3Line.findOpeningQuote(position) >= 0) resolve(); 
+            //we do not want to show label info on the actual label definition
+            if(p3Line.lineType !== P3LineType.LABEL || !p3Line.labelRange.contains(position)){
                 let p3Document = new P3Document(document, token);
                 let label = p3Document.p3Labels.get(word);
                 if(label)
                     resolve(label.instructionRange ? label.instructionRange.start : label.labelRange.end);
             } 
-            //if we are on the data part of an instruction, check if this data (alphanumeric with - and _) is a known constant and fetch its declaration
-            else if(p3Line.dataRange && p3Line.dataRange.contains(position)){
+            //we do not want to show label info on the actual variable definition
+            if(p3Line.lineType !== P3LineType.ASSIGNMENT || !p3Line.variableRange.contains(position)){
                 let p3Document = new P3Document(document, token);
                 let variable = p3Document.p3Assignments.get(word);
                 if(variable)
@@ -108,6 +110,6 @@ export class P3DocumentationInstruction {
         for(let flag of P3DocumentationInstruction.possibleFlags)
             if(flagmask.indexOf(flag) >= 0)
                 this.flags += flag;
-        this.pseudo = comps[4] === 'true';
+        this.pseudo = comps[4].toLowerCase() === 'true';
     }
 }

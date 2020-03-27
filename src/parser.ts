@@ -280,6 +280,20 @@ export class P3Line {
         }
         return registers;
     }
+
+    public findOpeningQuote(position: Position): number {
+        let inQuotes = false;
+        let openQuote = 0;
+        for (let i = 0; i < position.character; i++) {
+            let c = this.raw.charAt(i);
+            if (c === '\'') {
+                inQuotes = !inQuotes;
+                openQuote = i;
+            }
+        }
+        if(!inQuotes) return -1;
+        return openQuote;
+    }
 }
 
 export class P3Document {
