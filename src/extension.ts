@@ -3,6 +3,7 @@ import {P3HoverProvider} from './hover';
 import {P3DocumentationManager} from './documentation';
 import * as path from 'path';
 import { P3DefinitionProvider } from './definition';
+import { P3SymbolProvider } from './symbols';
 import { P3Executable } from './executables';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -12,6 +13,8 @@ export async function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.languages.registerHoverProvider('p3', new P3HoverProvider(docManager)));
         context.subscriptions.push(vscode.languages.registerDefinitionProvider('p3', new P3DefinitionProvider(docManager)));
     });
+
+    context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider('p3', new P3SymbolProvider()));
 
     //assemble and simulate commands
     let outputChannel = vscode.window.createOutputChannel('P3');

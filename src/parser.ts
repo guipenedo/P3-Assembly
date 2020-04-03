@@ -2,9 +2,13 @@ import { Position, Range, TextLine, TextDocument, CancellationToken } from 'vsco
 
 export enum P3LineType {
     ASSIGNMENT, // Line containing an assignment with or without comment
+    //  variable operator value
     INSTRUCTION, // Line containing with or without comment and data
+    // instruction data
     COMMENT, // Line containing only a comment
+    // (;comment)
     LABEL, // Line containing a label with or without comment
+    // label: instruction data
     OTHER
 }
 
@@ -36,20 +40,18 @@ export class P3Line {
     lineType: P3LineType;
     jumpInstruction: boolean = false;
 
-    vscodeTextLine?: TextLine;
+    vscodeTextLine: TextLine;
 
     /**
      * Constructor
      * @param line Text of the line
      * @param vscodeTextLine Line for vscode
      */
-    constructor(line: string, vscodeTextLine?: TextLine) {
+    constructor(line: string, vscodeTextLine: TextLine) {
         this.lineType = P3LineType.OTHER;
         this.raw = line;
         this.vscodeTextLine = vscodeTextLine;
-        let lineNumber = 0;
-        if (vscodeTextLine) 
-            lineNumber = vscodeTextLine.lineNumber;
+        let lineNumber = vscodeTextLine.lineNumber;
         this.start = new Position(lineNumber, 0);
         this.end = new Position(lineNumber, line.length);
         this.spacesBeforeLabelRange = new Range(new Position(lineNumber, 0), new Position(lineNumber, 0));
@@ -216,12 +218,10 @@ export class P3Line {
             if (r) 
                 if (firstMatch !== null) {
                     // Which one is the first in the line
-                    if (r.index < firstMatch.index) 
+                    if (r.index < firstMatch.index || r[0].length > firstMatch[0].length) 
                         firstMatch = r;
-                    
-                } else {
+                } else 
                     firstMatch = r;
-                }
         }
         return firstMatch;
     }
